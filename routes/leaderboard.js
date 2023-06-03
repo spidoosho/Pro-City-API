@@ -12,9 +12,9 @@ async function getLeaderboardFromDB(){
 }
 
 router.get('/leaderboard', async function (req, res) {
-    if (leaderboard == null) {
-        leaderboard = await getLeaderboardFromDB();
-    } 
+    //if (leaderboard == null) {
+    leaderboard = await getLeaderboardFromDB();
+    // } 
 
     res.json(leaderboard)
 });
