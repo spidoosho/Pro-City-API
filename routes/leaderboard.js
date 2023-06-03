@@ -3,7 +3,7 @@ var express = require('express');
 const CyclicDb = require("@cyclic.sh/dynamodb")
 const db = CyclicDb("rich-pantyhose-waspCyclicDB")
 
-const leaderboard = db.collection("leaderboard")
+var leaderboard = db.collection("leaderboard")
 
 var router = express.Router();
 
