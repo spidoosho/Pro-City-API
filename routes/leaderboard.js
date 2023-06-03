@@ -7,7 +7,7 @@ var router = express.Router();
 var leaderboard = null;
 
 async function getLeaderboardFromDB(){
-    const leaderboard = await vercelEdge.get('leaderboard');
+    const leaderboard = await vercelEdge.get('greeting');
     return nextServer.NextResponse.json(leaderboard);
 }
 
