@@ -8,11 +8,11 @@ const leaderboard = db.collection("leaderboard")
 var router = express.Router();
 
 async function getLeaderboardFromDB(){
-    let leo = await animals.set("leaderboard", [
+    leaderboard.set("leaderboard", [
         { id: 1, name: '1', elo: 1000 },
         { id: 2, name: '2', elo: 2000 },
         { id: 3, name: '3', elo: 3000 }
-    ])
+    ]);
 
     leaderboard = await leaderboard.get("leaderboard")
     return leaderboard
