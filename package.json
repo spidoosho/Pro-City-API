@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cyclic.sh/dynamodb": "^0.0.33",
     "express": "^4.17.3"
   }
 }

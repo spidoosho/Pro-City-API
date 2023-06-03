@@ -1,11 +1,21 @@
 var express = require('express');
 
+const CyclicDb = require("@cyclic.sh/dynamodb")
+const db = CyclicDb("rich-pantyhose-waspCyclicDB")
+
+const leaderboard = db.collection("leaderboard")
+
 var router = express.Router();
 
-var leaderboard = null;
-
 async function getLeaderboardFromDB(){
-    return null
+    let leo = await animals.set("leaderboard", [
+        { id: 1, name: '1', elo: 1000 },
+        { id: 2, name: '2', elo: 2000 },
+        { id: 3, name: '3', elo: 3000 }
+    ])
+
+    leaderboard = await leaderboard.get("leaderboard")
+    return leaderboard
 }
 
 router.get('/leaderboard', async function (req, res) {
