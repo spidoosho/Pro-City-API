@@ -1,33 +1,42 @@
 var express = require('express');
 
-const CyclicDb = require("@cyclic.sh/dynamodb")
-const db = CyclicDb("rich-pantyhose-waspCyclicDB")
-
-var leaderboard = db.collection("leaderboard")
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3()
 
 var router = express.Router();
 
-async function getLeaderboardFromDB(){
-    leaderboard.set("leaderboard", [
-        { id: 1, name: '1', elo: 1000 },
-        { id: 2, name: '2', elo: 2000 },
-        { id: 3, name: '3', elo: 3000 }
-    ]);
+async function getLeaderboardFromDB() {
+    let leaderboard = []
 
-    leaderboard = await leaderboard.get("leaderboard")
+    try {
+        leaderboard = await s3.getObject({
+            Bucket: "cyclic-rich-pantyhose-wasp-eu-west-2",
+            Key: "leaderboard"
+        }).promise()
+
+        leaderboard = JSON.parse(leaderboard.Body.toString('utf-8'));
+    } catch (e) {   
+        if (!(e.code == 'NoSuchKey')) {
+            throw e;
+        }
+        
+        await s3.putObject({
+            Body: JSON.stringify(leaderboard),
+            Bucket: "cyclic-rich-pantyhose-wasp-eu-west-2",
+            Key: "leaderboard",
+        }).promise()
+    }
+
     return leaderboard
 }
 
 router.get('/leaderboard', async function (req, res) {
-    //if (leaderboard == null) {
     leaderboard = await getLeaderboardFromDB();
-    // } 
-
     res.json(leaderboard)
 });
 
 
-// get player
+// TODO
 router.get('/player/:username(.+)', function (req, res) {
     var currPlayer = leaderboard.filter(player => player.username == req.params.username);
 
@@ -42,7 +51,7 @@ router.get('/player/:username(.+)', function (req, res) {
 router.put('/leaderboard', async function (req, res) {
     leaderboard = await getLeaderboardFromDB();
 
-    res.json({message: "Leaderboard updated.", location: "/leaderboard"});
+    res.json({ message: "Leaderboard updated.", location: "/leaderboard" });
 });
 
 module.exports = router;
