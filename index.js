@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/leaderboard", leaderboard);
+app.use("/", leaderboard);
 
 // connection
 const port = process.env.PORT || 9001;

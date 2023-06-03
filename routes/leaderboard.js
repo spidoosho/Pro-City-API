@@ -15,6 +15,7 @@ async function getLeaderboardFromDB(){
 }
 
 router.get('/leaderboard', async function (req, res) {
+    console.log('tady')
     if (leaderboard == null) {
         leaderboard = await getLeaderboardFromDB();
     } 
