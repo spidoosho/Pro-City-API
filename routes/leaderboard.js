@@ -1,14 +1,14 @@
 var express = require('express');
-import { NextResponse } from 'next/server';
-import { get } from '@vercel/edge-config';
+var nextServer = require('next/server');
+var vercelEdge = require('@vercel/edge-config');
 
 var router = express.Router();
 
 var leaderboard = null;
 
 async function getLeaderboardFromDB(){
-    const leaderboard = await get('leaderboard');
-    return NextResponse.json(leaderboard);
+    const leaderboard = await vercelEdge.get('leaderboard');
+    return nextServer.NextResponse.json(leaderboard);
 }
 
 router.get('/leaderboard', async function (req, res) {
