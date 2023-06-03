@@ -1,15 +1,14 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var multer = require('multer');
-var upload = multer();
+// Import packages
+const express = require("express");
+const leaderboard = require("./routes/leaderboard");
 
-var app = express();
+// Middlewares
+const app = express();
+app.use(express.json());
 
-// app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(upload.array());
+// Routes
+app.use("/leaderboard", leaderboard);
 
-var leaderboard = require('./leaderboard.js');
-app.use('/', leaderboard);
-app.listen(3000);
+// connection
+const port = process.env.PORT || 9001;
+app.listen(port, () => console.log(`Listening to port ${port}`));
