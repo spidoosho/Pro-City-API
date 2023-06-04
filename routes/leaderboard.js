@@ -1,30 +1,22 @@
 var express = require('express');
+var db = require('cyclic-s3');
 
-const AWS = require("aws-sdk");
-const s3 = new AWS.S3()
+const BUCKET_STR = "cyclic-rich-pantyhose-wasp-eu-west-2"
 
 var router = express.Router();
+db.loadDB(BUCKET_STR);
 
 async function getLeaderboardFromDB() {
     let leaderboard = []
 
     try {
-        leaderboard = await s3.getObject({
-            Bucket: "cyclic-rich-pantyhose-wasp-eu-west-2",
-            Key: "leaderboard"
-        }).promise()
-
-        leaderboard = JSON.parse(leaderboard.Body.toString('utf-8'));
-    } catch (e) {   
+        leaderboard = db.get("leaderboard");
+    } catch (e) {
         if (!(e.code == 'NoSuchKey')) {
             throw e;
         }
-        
-        await s3.putObject({
-            Body: JSON.stringify(leaderboard),
-            Bucket: "cyclic-rich-pantyhose-wasp-eu-west-2",
-            Key: "leaderboard",
-        }).promise()
+
+        db.set("leaderboard", leaderboard)
     }
 
     return leaderboard
@@ -33,6 +25,23 @@ async function getLeaderboardFromDB() {
 router.get('/leaderboard', async function (req, res) {
     leaderboard = await getLeaderboardFromDB();
     res.json(leaderboard)
+});
+
+router.get('/leaderboard/text', async function (req, res) {
+    leaderboard = await getLeaderboardFromDB();
+
+    if(leaderboard.length < 1) {
+        res.json("Leaderboard is empty");
+        return;
+    }
+
+    let result = `1. ${leaderboard[0].name} - ${leaderboard[0].elo}RR`;
+
+    for(let i = 1; i < Math.min(leaderboard.length, 6); i++) {
+        result += `, ${i + 1}. ${leaderboard[i].name} - ${leaderboard[i].elo}RR`
+    }
+
+    res.json(result)
 });
 
 
