@@ -1,10 +1,8 @@
 var express = require('express');
 var db = require('cyclic-s3');
 
-const BUCKET_STR = "cyclic-rich-pantyhose-wasp-eu-west-2"
-
 var router = express.Router();
-db.loadDB(BUCKET_STR);
+db.loadDB(process.env.BUCKET_STR);
 
 async function getLeaderboardFromDB() {
     let leaderboard = []
