@@ -2,7 +2,7 @@ var express = require('express');
 var db = require('cyclic-s3');
 
 var router = express.Router();
-db.loadDB(process.env.BUCKET_STR);
+db.loadDB(process.env.CYCLIC_BUCKET_NAME);
 
 async function getLeaderboardFromDB() {
     let leaderboard = []
