@@ -1,10 +1,18 @@
 var express = require('express');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
 const { ListTablesCommand, ScanCommand, UpdateItemCommand, GetItemCommand, TransactWriteItemsCommand, PutItemCommand } = require('@aws-sdk/client-dynamodb')
+require('dotenv').config();
 
 var router = express.Router();
-const dbclient = new DynamoDBClient({ region: 'eu-north-1' })
 
+const dbclient = new DynamoDBClient({
+    region: "eu-north-1", 
+    credentials: {
+      accessKeyId: process.env.ACCESS_KEY,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    },
+  });
+  
 async function getLeaderboardFromDB() {
     function comparePlayers (a, b) {
         return parseInt(a.elo.N) - parseInt(b.elo.N)
