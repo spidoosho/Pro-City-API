@@ -1,5 +1,6 @@
 var express = require('express');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
+const { ListTablesCommand, ScanCommand, UpdateItemCommand, GetItemCommand, TransactWriteItemsCommand, PutItemCommand } = require('@aws-sdk/client-dynamodb')
 
 var router = express.Router();
 const dbclient = new DynamoDBClient({ region: 'eu-north-1' })
@@ -10,7 +11,7 @@ async function getLeaderboardFromDB() {
     }
     
     const leaderboard = []
-    const input = { TableName: LEADERBOARD_TABLE_NAME }
+    const input = { TableName: 'Leaderboard' }
     let scan = await dbclient.send(new ScanCommand(input))
     
     // if one scan is not enough, then scan until retrieved all items
@@ -48,10 +49,10 @@ router.get('/leaderboard/text', async function (req, res) {
         return;
     }
 
-    let result = `1. ${leaderboard[0].name} - ${leaderboard[0].elo}RR`;
+    let result = `1. ${leaderboard[0].displayName.S} - ${leaderboard[0].elo.N} (${leaderboard[0].gamesWon.N}:${leaderboard[0].gamesLost.N})`
 
     for(let i = 1; i < Math.min(leaderboard.length, 6); i++) {
-        result += `, ${i + 1}. ${leaderboard[i].name} - ${leaderboard[i].elo}RR`
+        result += `, ${i + 1}. ${leaderboard[i].displayName.S} - ${leaderboard[i].elo.N} (${leaderboard[i].gamesWon.N}:${leaderboard[i].gamesLost.N})`;
     }
 
     res.json(result)

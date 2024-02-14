@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.513.0",
     "aws-sdk": "^2.1390.0",
     "cyclic-s3": "^0.8.2",
     "express": "^4.17.3"
