@@ -1,24 +1,39 @@
 var express = require('express');
-var db = require('cyclic-s3');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
 
 var router = express.Router();
-db.loadDB(process.env.CYCLIC_BUCKET_NAME);
+const dbclient = new DynamoDBClient({ region: 'eu-north-1' })
 
 async function getLeaderboardFromDB() {
-    let leaderboard = []
-
-    try {
-        leaderboard = db.get("leaderboard");
-    } catch (e) {
-        if (!(e.code == 'NoSuchKey')) {
-            throw e;
-        }
-
-        db.set("leaderboard", leaderboard)
+    function comparePlayers (a, b) {
+        return parseInt(a.elo.N) - parseInt(b.elo.N)
     }
-
-    return leaderboard
+    
+    const leaderboard = []
+    const input = { TableName: LEADERBOARD_TABLE_NAME }
+    let scan = await dbclient.send(new ScanCommand(input))
+    
+    // if one scan is not enough, then scan until retrieved all items
+    // if LastEvaluatedKey is undefined, then all items have been retrieved
+    while (scan.LastEvaluatedKey !== undefined) {
+        // LastEvaluatedKey is defined, ergo scan found items
+        scan.Items.forEach(function (item, index) {
+        leaderboard.push(item)
+        })
+    
+        input.ExclusiveStartKey = scan.LastEvaluatedKey
+        scan = await dbclient.send(new ScanCommand(input))
+    }
+    
+    if (scan.Items !== undefined) {
+        scan.Items.forEach(function (item, index) {
+        leaderboard.push(item)
+        })
+    }
+    
+    return leaderboard.sort(comparePlayers).reverse()
 }
+
 
 router.get('/leaderboard', async function (req, res) {
     leaderboard = await getLeaderboardFromDB();
