@@ -33,7 +33,7 @@ async function getLeaderboardFromDB (dbclient) {
   }
 
   const leaderboard = []
-  const input = { TableName: LEADERBOARD_TABLE_NAME }
+  const input = { TableName: LEADERBOARD_TABLE_NAME, ProjectionExpression: 'displayName, elo, gamesWon, gamesLost' }
   let scan = await dbclient.send(new ScanCommand(input))
 
   // if one scan is not enough, then scan until retrieved all items
