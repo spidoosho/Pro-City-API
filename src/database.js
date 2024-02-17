@@ -1,4 +1,4 @@
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
+const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb')
 const { ScanCommand } = require('@aws-sdk/client-dynamodb')
 const { LEADERBOARD_TABLE_NAME } = require('./constants.js')
 
@@ -57,4 +57,27 @@ async function getLeaderboardFromDB (dbclient) {
   return leaderboard.sort(comparePlayers).reverse()
 }
 
-module.exports = { getClient, getLeaderboardFromDB }
+/**
+ * Check if there is a table with name LEADERBOARD_TABLE_NAME in client database
+ *
+ * @param   {DynamoDBClient} dbclient  Dynamo DB Client
+ * @returns {Promise<boolean>} if table exists
+ */
+async function isLeaderboardTableFound (dbclient) {
+  let tables = await dbclient.send(new ListTablesCommand())
+
+  if (tables.TableNames.find(tableName => tableName === LEADERBOARD_TABLE_NAME)) {
+    return true
+  }
+
+  while (tables.LastEvaluatedTableName !== undefined) {
+    tables = await dbclient.send(new ListTablesCommand({ LastEvaluatedTableName: tables.LastEvaluatedTableName }))
+    if (tables.TableNames.find(tableName => tableName === LEADERBOARD_TABLE_NAME)) {
+      return true
+    }
+  }
+
+  return false
+}
+
+module.exports = { getClient, getLeaderboardFromDB, isLeaderboardTableFound }
