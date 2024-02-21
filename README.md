@@ -18,4 +18,8 @@ Scan `LEADERBOARD_TABLE_NAME` for players sorted in descending order of players'
 
 ### `/player/:username`
 
+Scan `LEADERBOARD_TABLE_NAME` for a player named `:username`. Returns raw data.
+
+### `/player/:username/text`
+
 Scan `LEADERBOARD_TABLE_NAME` for a player named `:username`, sends a response in a human readable string for Twitch commands purposes.

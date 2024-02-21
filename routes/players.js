@@ -6,9 +6,17 @@ const router = express.Router()
 const dbclient = getClient()
 
 /**
- * Sends a JSON response with a string of a player retrieved based on username
+ * Sends a JSON response of a player retrieved from the database
  */
 router.get('/player/:username', async function (req, res) {
+  const player = await getPlayerDataFromDb(dbclient, req.params.username)
+  res.json(player)
+})
+
+/**
+ * Sends a JSON response with a string of a player
+ */
+router.get('/player/:username/text', async function (req, res) {
   const player = await getPlayerDataFromDb(dbclient, req.params.username)
   const playerStr = `${player.displayName.S} - ${player.elo.N} (${player.gamesWon.N}: ${player.gamesLost.N})`
   res.json(playerStr)
