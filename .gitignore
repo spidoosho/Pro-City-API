@@ -9,6 +9,7 @@ lerna-debug.log*
 
 # debug
 tryout.js
+package-lock.json
 
 # vscode
 .vscode
