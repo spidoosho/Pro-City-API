@@ -8,7 +8,7 @@ const { LEADERBOARD_TABLE_NAME } = require('./constants.js')
  */
 function getClient () {
   return new DynamoDBClient({
-    region: process.env.REGION,
+    region: 'eu-north-1',
     credentials: {
       accessKeyId: process.env.ACCESS_KEY,
       secretAccessKey: process.env.SECRET_ACCESS_KEY

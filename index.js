@@ -14,5 +14,6 @@ app.use('/', player)
 app.use('/', home)
 
 // Connection
+console.log(process.env.region)
 const port = process.env.PORT || 9001
 app.listen(port, () => console.log(`Listening to port ${port}`))
