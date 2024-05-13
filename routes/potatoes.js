@@ -66,13 +66,27 @@ async function ClearTable () {
 router.post('/potatoes/update', async (req, res) => {
   await ClearTable()
 
+  console.log(JSON.stringify(req.body))
   const itemArray = []
+  itemArray.push({
+    PutRequest: {
+      Item: {
+        Id: {
+          N: '0'
+        },
+        LastUpdate: {
+          S: req.body.LastUpdate
+        }
+      }
+    }
+  })
+
   for (let i = 0; i < req.body.Datum.length; i++) {
     itemArray.push({
       PutRequest: {
         Item: {
           Id: {
-            N: i.toString()
+            N: (i + 1).toString()
           },
           Datum: {
             S: req.body.Datum[i]
@@ -90,7 +104,6 @@ router.post('/potatoes/update', async (req, res) => {
       }
     })
   }
-
   const batches = []
   while (itemArray.length > 0) {
     batches.push(itemArray.splice(0, 25))
