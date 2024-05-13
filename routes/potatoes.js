@@ -9,8 +9,21 @@ const dbclient = getClient()
 
 router.get('/potatoes', async function (req, res) {
   const potatoes = await getPotatoesFromDb(dbclient)
-  res.render('index', { objednavky: potatoes })
+  const sum = getPotatoesSum(potatoes)
+  res.render('index', { objednavky: potatoes, sum })
 })
+
+function getPotatoesSum (potatoes) {
+  let result = 0
+  for (const order of potatoes) {
+    const numericPart = order.Mnozstvi.S.replace(/[^. 0-9]/g, '')
+    if (numericPart) {
+      result += parseInt(numericPart)
+    }
+  }
+
+  return result
+}
 
 async function ClearTable () {
   let itemCount = -1
