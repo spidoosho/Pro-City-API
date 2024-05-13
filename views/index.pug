@@ -1,0 +1,14 @@
+html
+  body
+      table(style='width:100%', border='1')
+        tr
+          th Datum
+          th Nazev
+          th Mnozstvi
+          th Objednavka
+        each obj in objednavky
+          tr
+            td #{obj.Datum.S}
+            td #{obj.Nazev.S}
+            td #{obj.Mnozstvi.S}
+            td #{obj.Objednavka.S}
