@@ -8,9 +8,9 @@ const router = express.Router()
 const dbclient = getClient()
 
 router.get('/potatoes', async function (req, res) {
-  const potatoes = await getPotatoesFromDb(dbclient)
+  const [lastUpdate, potatoes] = await getPotatoesFromDb(dbclient)
   const sum = getPotatoesSum(potatoes)
-  res.render('index', { objednavky: potatoes, sum })
+  res.render('index', { objednavky: potatoes, sum, lastUpdate })
 })
 
 function getPotatoesSum (potatoes) {

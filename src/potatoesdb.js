@@ -8,8 +8,9 @@ async function getPotatoesFromDb (dbclient) {
      * @returns {number} difference of elo
      */
 
-  const leaderboard = []
-  const input = { TableName: 'Potatoes', ProjectionExpression: 'Nazev, Mnozstvi, Datum, Objednavka' }
+  const potatoes = []
+  let lastUpdate
+  const input = { TableName: 'Potatoes', ProjectionExpression: 'Nazev, Mnozstvi, Datum, Objednavka, LastUpdate' }
   let scan = await dbclient.send(new ScanCommand(input))
 
   // if one scan is not enough, then scan until retrieved all items
@@ -17,7 +18,11 @@ async function getPotatoesFromDb (dbclient) {
   while (scan.LastEvaluatedKey !== undefined) {
     // LastEvaluatedKey is defined, ergo scan found items
     scan.Items.forEach(function (item, index) {
-      leaderboard.push(item)
+      if ('LastUpdate' in item) {
+        lastUpdate = item.LastUpdate.S
+      } else {
+        potatoes.push(item)
+      }
     })
 
     input.ExclusiveStartKey = scan.LastEvaluatedKey
@@ -26,11 +31,15 @@ async function getPotatoesFromDb (dbclient) {
 
   if (scan.Items !== undefined) {
     scan.Items.forEach(function (item, index) {
-      leaderboard.push(item)
+      if ('LastUpdate' in item) {
+        lastUpdate = item.LastUpdate.S
+      } else {
+        potatoes.push(item)
+      }
     })
   }
 
-  return leaderboard
+  return [lastUpdate, potatoes]
 }
 
 module.exports = { getPotatoesFromDb }
