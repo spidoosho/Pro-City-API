@@ -81,29 +81,33 @@ router.post('/potatoes/update', async (req, res) => {
     }
   })
 
-  for (let i = 0; i < req.body.Datum.length; i++) {
-    itemArray.push({
-      PutRequest: {
-        Item: {
-          Id: {
-            N: (i + 1).toString()
-          },
-          Datum: {
-            S: req.body.Datum[i]
-          },
-          Mnozstvi: {
-            S: req.body.Mnozstvi[i]
-          },
-          Nazev: {
-            S: req.body.Nazev[i]
-          },
-          Objednavka: {
-            S: req.body.Objednavka[i]
+  console.log(JSON.stringify(req.body))
+  if ('Datum' in req.body) {
+    for (let i = 0; i < req.body.Datum.length; i++) {
+      itemArray.push({
+        PutRequest: {
+          Item: {
+            Id: {
+              N: (i + 1).toString()
+            },
+            Datum: {
+              S: req.body.Datum[i]
+            },
+            Mnozstvi: {
+              S: req.body.Mnozstvi[i]
+            },
+            Nazev: {
+              S: req.body.Nazev[i]
+            },
+            Objednavka: {
+              S: req.body.Objednavka[i]
+            }
           }
         }
-      }
-    })
+      })
+    }
   }
+
   const batches = []
   while (itemArray.length > 0) {
     batches.push(itemArray.splice(0, 25))
