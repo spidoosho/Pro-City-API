@@ -17,7 +17,7 @@ async function getPotatoesFromDb (dbclient) {
   // if LastEvaluatedKey is undefined, then all items have been retrieved
   while (scan.LastEvaluatedKey !== undefined) {
     // LastEvaluatedKey is defined, ergo scan found items
-    scan.Items.forEach(function (item, index) {
+    scan.Items.forEach(async function (item, index) {
       if ('LastUpdate' in item) {
         lastUpdate = item.LastUpdate.S
       } else {
@@ -26,11 +26,14 @@ async function getPotatoesFromDb (dbclient) {
     })
 
     input.ExclusiveStartKey = scan.LastEvaluatedKey
+    console.log('ScanCommand===================================')
     scan = await dbclient.send(new ScanCommand(input))
+    console.log(JSON.stringify(scan))
+    console.log('==============================================')
   }
 
   if (scan.Items !== undefined) {
-    scan.Items.forEach(function (item, index) {
+    scan.Items.forEach(async function (item, index) {
       if ('LastUpdate' in item) {
         lastUpdate = item.LastUpdate.S
       } else {

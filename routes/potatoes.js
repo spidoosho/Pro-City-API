@@ -49,24 +49,24 @@ async function ClearTable () {
   // BatchWriteItem supports requests up to 25 items per call
   const batches = [] // Array to hold batches of delete requests
   while (deleteRequests.length > 0) {
-    batches.push(deleteRequests.splice(0, 25)) // Split delete requests into batches of 25 or less
+    batches.push(deleteRequests.splice(0, 24)) // Split delete requests into batches of 25 or less
   }
 
-  // Execute batch delete requests
-  batches.forEach(async (batch) => {
+  for (const batch of batches) {
     const batchParams = {
       RequestItems: {
         Potatoes: batch
       }
     }
+    console.log('BatchWriteItemCommand-DELETE==================')
     await dbclient.send(new BatchWriteItemCommand(batchParams))
-  })
+    console.log('==============================================')
+  }
 }
 
 router.post('/potatoes/update', async (req, res) => {
   await ClearTable()
 
-  console.log(JSON.stringify(req.body))
   const itemArray = []
   itemArray.push({
     PutRequest: {
@@ -81,7 +81,6 @@ router.post('/potatoes/update', async (req, res) => {
     }
   })
 
-  console.log(JSON.stringify(req.body))
   if ('Datum' in req.body) {
     for (let i = 0; i < req.body.Datum.length; i++) {
       itemArray.push({
@@ -110,18 +109,20 @@ router.post('/potatoes/update', async (req, res) => {
 
   const batches = []
   while (itemArray.length > 0) {
-    batches.push(itemArray.splice(0, 25))
+    batches.push(itemArray.splice(0, 24))
   }
 
-  // Execute batch delete requests
-  batches.forEach(async (batch) => {
+  for (const batch of batches) {
     const batchParams = {
       RequestItems: {
         Potatoes: batch
       }
     }
-    await dbclient.send(new BatchWriteItemCommand(batchParams))
-  })
+    console.log('BatchWriteItemCommand-PUT=====================')
+    const response = await dbclient.send(new BatchWriteItemCommand(batchParams))
+    console.log(JSON.stringify(response))
+    console.log('==============================================')
+  }
 
   res.send('POST request to update potatoes done.')
 })
