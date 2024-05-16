@@ -16,8 +16,8 @@ router.get('/potatoes', async function (req, res) {
 function getPotatoesSum (potatoes) {
   let result = 0
   for (const order of potatoes) {
-    const numericPart = order.Mnozstvi.S.replace(/[^. 0-9]/g, '')
-    if (numericPart) {
+    const numericPart = order.Mnozstvi.S.replace(/[^ 0-9]/g, '')
+    if (numericPart && parseInt(numericPart)) {
       result += parseInt(numericPart)
     }
   }
@@ -46,10 +46,9 @@ async function ClearTable () {
     })
   }
 
-  // BatchWriteItem supports requests up to 25 items per call
-  const batches = [] // Array to hold batches of delete requests
+  const batches = []
   while (deleteRequests.length > 0) {
-    batches.push(deleteRequests.splice(0, 24)) // Split delete requests into batches of 25 or less
+    batches.push(deleteRequests.splice(0, 24))
   }
 
   for (const batch of batches) {
