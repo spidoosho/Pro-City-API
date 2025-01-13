@@ -1,25 +1,439 @@
-# Pro City API
+- **RSA **(pro obor OI) - šifrování, dešifrování a generování klíčů
+    -  _Eulerova veta_ : ak $a,m$ nesúdeliteľné prirodzené čísla potom $a^{\varphi(m)}\equiv1(mod\ m)$  
+    - Algorimus:
+        - $N,c$ verejný kľúč, $d,p,q$ súkromný kľúč
+        - $A$ posiela správu ktorá hovorí prirodzené číslo $0<x<N$, $gcd(x,N)=1$, vypočíta $Y=x^e\ mod\ N$ a pošle $y\ \ B$
+        - Dk: $y^d\equiv(x^e)^d\equiv x^{ed}\equiv x^1=x\ (mod\ N)$ pretože $ed\equiv1(mod\ \varphi(N))$ 
+        - $B$ zvolí rôzne prvočísla $q,p$, spočíta $N=p.q$, náhodne zvolí $c$ nesúdeliteľné s $\varphi(N)=(p-1)(q-1)$ pomocou Euklidovho algoritmu spočíta $d$ t.ž. $dc\equiv1(mod\ \varphi(N))$
 
-API that retrieves data from DynamoDB database.
-
-## Available commands
-
-### `/`
-
-Scan the database for a table called `LEADERBOARD_TABLE_NAME`
-
-### `/leaderboard`
-
-Scan `LEADERBOARD_TABLE_NAME` for players sorted in descending order of players' ratings.
-
-### `/leaderboard/text`
-
-Scan `LEADERBOARD_TABLE_NAME` for players sorted in descending order of players' ratings, but sends a response in a human readable string for Twitch commands purposes.
-
-### `/player/:username`
-
-Scan `LEADERBOARD_TABLE_NAME` for a player named `:username`. Returns raw data.
-
-### `/player/:username/text`
-
-Scan `LEADERBOARD_TABLE_NAME` for a player named `:username`, sends a response in a human readable string for Twitch commands purposes.
+        - $B$ získa $x$ ako $x=y^d\ mod\ N$
+    - protokol RSA - šifrovanie s verejným kľúčom, $X$ prijíma šifrované správy od klientov pomocou verejného kľúča, iba $X$ môže správy dešifrovať pomocou súkromného kľúča
+    -  _eulerova funkcia_  $\varphi(n)$ pre $n\in\N$ značí počet čísel $k\in\{1,...,n-1\}$ t.ž. $gcd(k,n)=1$  
+- **Algoritmy vyhledávání v textu** 
+    - abeceda $\Sigma$ je konečná množina znakov, $\Sigma^*$ je mnžina všetkých slov/reťazcov nad $\Sigma$, $\delta[k]$ k-tý znak slova, $\delta[k:l]$ podslovo od $k$ po $l$ vrátane, $\delta[:l]$ prefix prv7ch $l$ znakov, $\delta[k:]$ suffix od k-tého znaku
+    - Aho-Corasicková algoritmus
+        - AC nájde všetky výskyty v čase $\Theta(\sum_iJ_i+S+V)$, kde $J_i$ je dĺžka ihiel, $S$ dĺžka sena, $V$ počet výskytov 
+        - ![](https://remnote-user-data.s3.amazonaws.com/CJltDc4-SXqciXDzzG7HnerFVa-tAdDGak-JO0HUp7DwK7lk4NLCZcHTIKLh3SiA2fL8Eur_WCJwgCx5K_dWvszKZQ6d9S9NdtWlvpadG4wftdBgGKDBaBfNgLGSmd7b.png) 
+        - ihly $i_1,..,i_n$ s dĺžkami $J_i=|i_i|$, seno $\sigma$ s dĺžkou $S$, hľadáme všetky výskyty ihiel
+        -  _skratková hrana_  zo stavu $\alpha$ vedie do najbližšieho koncového stavu dosiahnuteľného z $\alpha$ po spätných hranách.
+        - vyhľadávací automat, stavy sú prefixy, dopredné hrany rozšírené o písmeno, listy stromu odpovedajú ihlám, môžu sa vyskytovať aj vo vnútorných vrcholoch - koncové stavy, spätné hrany do najdhšieho vlastného suffixu
+    - Knuth-Morris-Pratt algoritmus
+        - ![](https://remnote-user-data.s3.amazonaws.com/teD6UGWA3FG7Y7sW8VTLbkaF0hrH8MNp4U5K2R6BmjcbrRv0YdCpLXtzhqhg8UNfwJeRN-nQxU1PtodW_aZluJxF-FEaFCSzKDgWQdnlAfmYqci_nh9FyNmg3hHGaVsN.png) 
+        - KMP sa opiera o vyhľadávací automat - orientovaný graf, ktorého vrcholy sú prefixy ihly spojené hranami doprednými, rozširujú prefix o 1 písmeno a spätné, z každého stavu do jeho najdlhšieho vlastného suffixu (uložené v poli $Z[s]$)
+        - stav algorimu $s$ hovorí aký najdlhší prefix ihly je suffixom zatiaľ prečítanej časti sena $\Rightarrow$ algoritmus ohlási všetky výskyty
+        - pri konštrukcii automatu zostrojíme dopredné hrany, potom spustíme automat na $i[1:]$ a doplníme spätné hrany 
+    - seno = text/reťazec, ihla = hľadaný reťazec
+- **Třídy složitosti**  
+    - trieda P→trieda rozhodovacích probémov, ktoré sú riešiteľné v polynomiálnom čase (ak $A\rightarrow B$ a $B\in P$ potom aj $A\in P$)
+    - rozhodovací problém→funkcia $f:\{0,1\}^*\rightarrow\{0,1\}$, tj. z množiny všetkých reťazcov nad binárnou abecedou do množiny {0,1}
+    - příklady NP-úplných problémů a převodů mezi nimi
+        - Logické:
+SAT, 3-SAT, 3,3-SAT, SAT pre všeobecné formule, obvodový SAT (splniteľnosť booleovského obvodu)
+        - Grafové:
+nezávislá množina, klika (úplný podgraf), farbenie grafu, hamiltonovská cesta, hamiltonovská kružnica
+        - Číselné:
+súčet podmnožiny, batoh, lúpežníci
+    - NP-těžkost→problém $L$ nazveme NP-ťažký ak je na $L$ prevoditeľný každý problém z NP.
+    - rozhodovací problém A je  _prevoditeľný_  na rozhodovací problém B, $A\rightarrow B$
+        - relácia $\rightarrow$ je čiastočné kváziusporiadanie, tj. reflexívna, tranzitívna, nie je asymetrická a existujú navzájom neprevoditeľné problémy
+        - práve vtedy ak $\exist f:\{0,1\}^*\rightarrow\{0,1\}^*$ vypočítateľná v polynomiálnom čase, taká že $\forall x\in\{0,1\}^*\ A(x)=B(f(x))$. 
+    - trieda NP→trieda rozhodovacích problémov $L$ takých, že $\exist K\in P$ a polynóm $g$ tak, že každý vstup $x$ je $L(x)=1\Leftrightarrow$ pre reťazec $y$ dĺžky $|y|\le g(|x|)$ platí $K(x,y)=1$. (Algoritmus $K$ rieši problém $L$ ale okrem vstupu má k dispozícii polynomiálne dlhú nápovedu $y$.) 
+    - NP-úplnost→problém $L$ je NP-úplný ak je NP-ťažký a naviac leží v NP.
+- **Grafové algoritmy**
+    - prohledávání do hloubky 
+        - $O(n+m)$, dobehne po konečne veľa krokoch - každý dosiahnuteľný vrchol prejde najprv do otvoreného potom do uzavretého stavu v ktorom zotrvá, každý  vrchol uzatvárame práve raz a prejdeme hrany, ktoré z neho vedú - nad každým vrcholom a hranou strávime konštantný čas
+        - vrcholy spracováva rekurzívne, kedykoľvek narazí na doposiaľ nevidený vrchol otvorí ho 
+        - zavolá sa rekurzívne na všetkých svojich následovníkov, pôvodný vrchol zavrie a vráti sa z rekurzie
+    - prohledávání do šířky
+        - dobehne po konečnom počte krokov - po zastavení vrcholy dosiahnuteľné z $v_0$ sú uzavreté a ostatné vrcholy sú nevidené 
+        - 3 stavy vrcholov: nevidený, otvorený, uzavretý
+    - tranzitivní uzávěr
+        - 
+    - topologické třídění orientovaných grafů
+        - časová a pamäťová zložitosť sú lineárne
+        - ak je DAG prázdny topologické usporiadanie je triviálne, v opačnom prípade nájdeme zdroj, vyhlásime ho za prvý vrchol usporiadania a odstránime ho vrátane hrán, tým sme znovu získali DAG a postup opakujem
+        - v každom beprázdnom DAGu existuje zdroj
+        - DAG = acyklický orientovaný graf
+        - pre každú hranu $xy$ platí $out(x)>out(y)$ - je to pravda pre každé typy hrán okrem spätných, tie sa ale v DAG nevyskytujú, stačí teda do DFS doplniť aby každý vrchol ktorý opúšťa doplnil do zoznamu usporiadania na začiatok
+        - orientovaný graf má topologické usporiadanie práve vtedy ak je DAG
+        - poradie v ktorom DFS opúšťa vrcholy je opačné topologické
+        - lineárne usporiadanie $\prec$ na vrcholoch grafu nazveme  _topologickým usporiadaním_  vrcholov ak pre každú hranu $xy$ platí $x\prec y$
+    - detekce komponent souvislosti
+        - v pomocnom poli udržujeme komponenty do ktorých dané vrcholy patria, prechodom cez všetky vrcholy kontrolujeme či je táto hodnota definovaná ak nie, spustíme prehľadávanie a aktualizujeme toto pole 
+        - vyberieme si ľubovolný vrchol a spustíme z neho BFS, ak sme navštívili všetky vrcholy, graf je súvislý, v opačnom prípade sme prešli celú jednu komponentu súvislosti, nájdeniu ostatných komponent stačí opakovane vyberať doposiaľ nenavštívený vrchol a spúšťať prehľadávanie
+        - prehľadanie komponenty s $n_i$ vrcholmi a $m_i$ hranami a trvá $\Theta(n_i+m_i)$, ďalej vykonáva inicializáciu a hľadá neoznačené vrcholy ( pre každý vrchol len raz) celkovo $\Theta(n+\sum_i(n_i+m_i))=$ $\Theta(n+m)$ 
+    - minimální kostra grafu:
+        -  _kostra_  grafu $G$ je podgraf, ktorý obsahuje všetky vrcholy a je to strom, je  _minimálna_  ak má medzi všetkými kostrami najmenšiu váhu
+        - $G=(V,E)$ súvislý neorientovaný graf, $w:E\rightarrow\R$ váhová funkcia, $n,m$ počet vrcholov a hrán, váha $w(H)$ podgrafu $H\subseteq G$ je súčet váh jeho hrán
+        - Jarníkův algoritmus
+            - hladový algoritmus - začne so stromom s 1 vrcholom, vyberie najľahšiu incidentnú hranu a pridá ju, postup opakuje
+            - najviac po $n$ iteráciach zastaví a vydá nejakú kostru v čase $O(nm)$ 
+        - Borůvkův algoritmus 
+            - najviac po $\lfloor log_2n\rfloor$ iteráciach zastaví a vydá minimálnu kostru v čase $O(m\ log\ n)$ 
+            - paralelníá verzia Jarníkova algoritmu: namiesto jedného stromu ich pestujeme viac, začíname s množinou všetkých vrcholov a v každej iterácii sa každá komponenta zlúči s tým zo svojich susedov, do ktorého vedie nejľahčia hrana
+    - toky v sítích:
+        - veľkosť toku $f$ označíme $|f|$ a je rovná prebytku spotrebiča $f^\triangle(s)$ 
+        - sieť je usporiadana pätica $(V,E,z,s,c)$, kde $(V,E)$ je orientovaný graf, $c:E\rightarrow\R_0^+$, $z,s\in V$ zdroj a stok - predpokladáme, že graf neobsahuje izolované vrcholy a je symetrický
+        - Goldbergův algoritmus
+            - Algoritmus
+                - Nastav počiatočné výšky $h(z)=n$ a inak $\forall v\ne z:h(v)=0$ 
+                - Vytvor vlnu: $f$ všade nulová funkcia a $f(zv)=c(zv)$ ak $zv\in E$ 
+                - Pokiaľ $\exist u\ne z:f^\triangle(u)>0$  
+                    - Ak $\exist uv:r(uv)>0$ a $h(u)>h(v)$ potom preveď prebytok po $uv$ 
+                    - Inak $h(u)=h(u)+1$ (zdvihnutie)
+                - Výstup: maximálny tok $f$ v 
+                - Vstup: sieť $(V,E,z,s,c)$ 
+                - 
+            - invariant:
+                - neexistuje hrana $uv$ ktorá má kladnú rezervu a spád $h(u)-h(v)>1$
+                - ak $\exist v:f^\triangle(v)>0$ potom existuje nenasýtená cesta z $v$ do zdroja
+                - keď sa algoritmus zastaví $f$ je maximálny tok
+                - $\forall v:h(v)\le2n$, nastane najviac $2n^2$ zdvihnutí 
+                - $f$ je vlna, $h(v)$ nikdy neklesá, $h(z)=n$ a $h(s)=0$, $f^\triangle(v)\ge0\ \forall v\ne z$ 
+            - prevedenie po hrane $uv$ je nasýtené ak po prevode rezerva $r(uv)$ klesla na 0 - nastane najviac $nm$ nasýtený prevedení, počet nenasýtených prevedení je $O(n^2m)$
+            - max tok v čase $O(n^2m)$ 
+            -  _prevedenie prebytku po vlne_  znamená, že po $uv$ pošleme $\delta=min(f^\triangle(u),r(uv))$ jednotiek toku
+            - funkcia $f:E\rightarrow\R_0^+$ je  _vlna_  v sieti $(V,E,z,s,c)$ ak $\forall e\in E:f(e)\le c(e)$ a $\forall v\in V/\{z,s\}:f^\triangle(v)\ge0$, každý tok je vlna.
+        - Fordův-Fulkersonův algoritmus
+            -  _rezerva hrany_  $uv$ je  číslo $r(uv):=c(uv)-f(uv)$, hrana s nulovou rezervou je nasýtená,  _cesta je nasýtená_  ak je nasýtená aspoň jedna hrana
+            - začneme s nulovým tokom a postupne ho zlepšujeme, nájdeme zlepšujúcu cestu P (po hranách tečie menej ako kapacita), $\mathcal{E}:=min_{e\in P}(c(e)-f(e))$ a definujeme nový tok $f'(e):=f(e)+\mathcal{E}$ pre $e\in P$ alebo $f(e)$ pre $e\notin P$
+            - FF sa zastaví a vydá maximálny tok a minimálny rez pre každú sieť s racionálnymi kapacitami
+            - ak sa Ford-Fulkerson zastaví, vydá maximálny tok
+        -  _tok v sieti_  je funkcia $f:E\rightarrow\R_0^+$ t.ž. $f^+(v):=\sum_{u:uv\in E}f(uv)$, $f^-(v):=\sum_{u:uv\in E}f(vu)$, $f^\triangle(v):=f^+(v)-f^-(v)$ 
+            - $(\forall v\ne z,s:f^\triangle(v)=0)$
+            - $\forall e\in E:f(e)\le c(e)$ 
+            - Kirchhofov zákon: $\forall v\in V/\{z,s\}:\sum_{u:uv\in E}f(u,v)=\sum_{uv\in E}f(v,u)$ 
+        - Dinicův algoritmus
+            -  _prietok_  hrany $uv$ $f^*(uv)=f(uv)-f(vu)$ má vlastnosti: 
+                - $f^*(uv)\le c(uv)$ a $f^*(uv)\ge-c(vu)$
+                - $f^*(uv)=-f^*(vu)$ 
+                - $\forall v\ne z,s:\sum{u:uv\in E}f^*(uv)=0$
+            - sieť je  _vrstevnatá (prečistená)_  ak všetky vrcholy a hrany ležia na najkratších cestách zo $z$ do $s$ 
+            - nájde maximálny tok v čase $O(n^2m)$
+            -  _sieť rezerv_  k toku $f$ v sieti $S=(V,E,z,s,c)$ je sieť $R(S,f):=(V,E,z,s,r)$ kde $r(e)$ je rezerva hrany $e$ pri toku $f$  
+            - ak zastaví vydá maximálny tok, dĺžka $l$ vzrastie po každej fáze aspoň o 1, teda prebehne maximálne $n$ fází 
+            - tok je  _bolkujúci_  ak na každej orientovanej ceste zo zdroja do stoku existuje aspoň jedna hrana na kt. je tok rovný kapacite
+            - v každom kroku zostrojí sieť rezierv a odstráni z nej nasýtené hrany, hľadá blokujúci tok dĺžky najkratšej cesty $l$ zo $z$ do $s$, v upravenom grafe (bez spätných hrá, bez hrán za $s$, bez slepých uličiek) a skončí ak už neexistuje cesta zo $z$ do $s$
+    - nejkratší cesty v ohodnocených grafech 
+        - $\forall u,v\in V$ vzdialenosť $d(u,v)$ je minimum z dĺžok všetkých ciest medzi $u$ a $v$ alebo $+\infin$ ak cesta $uv$ neexistuje
+        - Najkratší sled existuje a má rovnakú dĺžku ako najkratšia cesta
+        - ohodnotený graf je $(G,l)$ kde $G=(V,E)$ je gaf a $l:E\rightarrow\R^+$ 
+        - platí trojuholníková nerovnosť: $d(u,v)\le d(u,w)+d(w,v)$ 
+        - pre každý $uv$ sled existuje $uv$ cesta rovnakej alemo menšej dĺžky
+        - dĺžka sledu $S$ v ohodnotenom grafe je $\sum_{e\in E(S)}l(e)$
+        - Bellmanův-Fordův algoritmus 
+            - v grafe bez záporných cyklov nájde Bellman-Fordov algoritmus všetky vzdialenosti z vrcholu $v_0$ v čase $O(nm)$ 
+            -  _fázy výpočtu_ : $F_0$ otvárame $v_0$, $F_{i+1}$ zatvára vrcholy otvorené fázou $F_i$ 
+            - invariant:  pre vrchol $v$ na konci $F_i$ platí $h(v)\le l(S)$ pre najkratší sled $S$ o najviac $i$ hranách
+            - relaxačný algoritmus, fronta pre otvorené vrcholy, uzatvárame najstaršie
+            - ak graf neobsahuje záporné cykly po $n$-tej fáze sa algoritmus zastaví
+        - Dijkstrův algoritmus 
+            - $O(n^2)$ v grafe s nezáporným ohodnotením - všetkým vrcholom musíme nainiciovať dané hodnoty $O(n)$, prechádzame všetky otvorené vrcholy podľa $h(v)$ a každý vrchol uzavrieme najviac raz, teda max $n$ priechodov cyklom 
+            - pre každý vrchol $v\in V$ si pamätáme $stav(v)$ (nevidený, otvorený, uzavretý), $h(v)$ (budík - doterajšia najkratšia vzdialenosť $d(v_0,v)$ z počiatočného vrchola cez už uzavreté vrcholy, ak $v$ nevidený $+\infin$) a $P(v)$ (predchodca $v$) 
+            - fronta pre otvorené vrcholy, uzatvárame najbližšie
+    - komponenty silné souvislosti orientovaných grafů
+        - algoritmus KSS rozloží graf na komponenty silnej súvislosti v čase $\Theta(n+m)$ a priestore $\Theta(n+m)$
+        - orientovaný graf je  _silno súvislý_  ak pre každé dva vrcholy $x$ a $y$ existuje orientovaná cesta z $x$ do $y$ aj napak
+        - nech $G^T$ je graf ktorý vznikne z $G$ otočením orientácie všetkých hrán, potom $G^T$ má rovnaké komponenty ako $G$, platí $C(G^T)=(C(G))^T$
+        - Buď $\leftrightarrow$ binárna relace na vrcholoch grafu definovaná t.ž. $x\leftrightarrow y$ práve vtedy ak existuje orientovaná cesta z $x$ do $y$ aj z $y$ do $x$. (relace $\leftrightarrow$ je ekvivalencia, ekvivalenčné triedy indikujú komponenty silnej súvislosti)
+        - graf komponent $C(G)$ je graf ktorého vrcholy sú komponenty silnej súvislosti a $(C_i,C_j)\in E(C(G)\Leftrightarrow$ v pôvodnom grafe $\exist v\in C_i$ a $u\in C_j$ t.ž. $(v,u)\in E(G)$ (niekedy sa nazýva kondenzácia)
+        - komponenta je  _zdrojová_  ak do nej nevedie žiadna hrana a  _stoková_  ak z nej nevedie žiadna hrana
+        - vrchol s maximálnym $out$ musí ležať v zdrojovej komponente
+        - ak spustíme DFS z vrcholuv stokovej komponente, navštívi práve celú tú komponentu
+        - DFS navštívi každý vrchol a hranu práve 2x, práca so zásobníkom trvá tiež lineárne dlho, pamäti potrebujeme lineárne veľkú - reprezentácia grafu, zásobníky
+        - KSS 
+            - opakovane spúšťame DFS v $G^T$, preskúmame všetky vrcholy $Z\leftarrow$ zásobník vrcholov podľa $out(v)$  
+            - zostroj $G^T$
+            - Vstup : orientovaný graf G
+            - Výstup : pre $\forall v\in V$ vráť $komp(v)$
+            - $Z\leftarrow$ prázdny zásobník
+            - odoberáme vrcholy zo $Z$, pre $\forall v \in Z:$ ak $komp(v)=$ nedefinovaná, spusti $DFS(v)$ v $G$, vstupuj len do vrcholov s nedefinovanou komponentou a hodnotu prepíš na $v$
+            - $\forall v\in V:$ $komp(v)\leftarrow$ nedefinovaná
+        - ak $\exist(C_1,C_2)\in E(C(G))$ potom $max_{x\in C_1}out(x)>max_{y\in C_2}out(y)$
+        - orientovaný graf je  _slabo súvislý_  ak zrušením orientácie hrán dostaneme súvislý neorientovaný graf
+- **Dynamické programování**
+    - aplikace: 
+    - nejdelší rostoucí podposloupnost
+        - $O(n^2)$
+        - korektnosť dokážeme indukciou: ak optimálne riešenie pre vstup $x_i,...,x_n$ začína dvojicou $x_i,x_j$ potom po odobraní $x_i$ vznikne optimálne riešenie pre kratší vstup $x_j,..,x_n$ začínajúce v $x_j$, pretože ak by existovalo lepšie riešenie pre kratší vstup mohli by sme ho rozšíriť o $x_i$
+        - pre vstupnú postupnosť $x_1,...,x_n$ vyplňuje tabuľku $T$ a $P$ od konca tak, že do $T[i]$ pridá dĺžku najdlhšej postupnosti začínajúcej prvkom $x_i$ a do $P[i]$ pridá index nasledovníka $x_i$ v tejto postupnosti:
+            - dodefinujeme $x_0=-\infin$ 
+            - pre $i=n,n-1,...,0$ iniciujeme $T[i]=1$ a $P[i]=0$ 
+            - pre $j=i+1,...,n$: ak $x_i<x_j$ a  $T[i]<1+T[j]$ potom $T[i]=1+T[j]$ a $P[i]=j$ 
+        - pre šikovnú dátovú štruktúru vieme v $\Theta(n\ log\ n)$. 
+    - editační vzdálenost
+        - editačná vzdialenosť reťazcov $x=x_1...x_n$ a $y=y_1...y_m$ udáva koľkoje najmenej potreba editačných operácii aby $x=y$ a značíme ju $L(x,y)$
+            - znak $x_1$ zmeníme na $y_1$ potom $L(x,y)=1+L(x_2...x_n,y_2...y_m)$ 
+            - na začiatku vložíme $y_1$ potom $L(x,y)=1+L(x,y_2...y_m)$ 
+            - znak $x_1$ zmažeme potom $L(x,y)=1+L(x_2...x_n,y)$
+            - ak $x_1=y_1$ potom $L(x,y)=L(x_2...x_n,y_2...y_m)$ 
+        - ![](https://remnote-user-data.s3.amazonaws.com/pDajznWrUHP-7jASMTZxY4_qYUonzjpyrRmQE9H9qPjnhmegxBYyKt66-Khv878GZpBMJgCz77Gt36CXKR1hdD7ibSYhHslXPB4zdRboz4fZn02IgH6pu7FMRSQJcliX.png)
+        - beží v šase $\Theta(mn)$ 
+    - princip dynamického programování
+        - kešovaciu tabuľku vieme vypĺňať bez rekurzie ak zvolíme vhodné poradie podproblémov $\Rightarrow$ získame rovnako rýchly ale jednoduchší algoritmus 
+        - odhalíme opakované výpočty rovnakých podproblémov
+        - začneme s rekurzívnym algoritmom, ktorý je exponenciálne pomalý 
+        - [Message](link_generated_on_download)―[Restructure](link_generated_on_download)
+        - řešení podproblémů od nejmenších k největším
+        - vytvoríme tabuľku, v ktorej si budeme pamätať ktoré podproblémy sme už vyriešili, tým prerežeme strom rekurzie a vznikne rýchlejší algortitmus = "kešovanie, kešovacia tabuľka" (cache).
+- **Algebraické algoritmy**
+    - výpočet Fourierovy transformace algoritmem FFT
+        - ak je $n$ mocnina dvojky môžeme v čase $\Theta(n\ log\ n)$ spočítať DFT v $\mathbb{C}^n$ aj jej inverz.
+        - polynómy veˇkosti $n$ nad telesom $\mathbb{C}$ je možné násobiť v čase $\Theta(n\ log\ n)$ 
+        - komplexné číslo $x$ je  _primitívna _ $n$ _-tá odmocnina z 1_  ak $x^n=1$ a žiadne s čísel $x^1,x^2,...,x^{n-1}\ne1$.
+        - pre $p$ vektor koeficientov $P$ je $\mathcal{F}(p)$ graf $P$ v bodoch $\omega^0,...,\omega^{n-1}$ 
+        - ![](https://remnote-user-data.s3.amazonaws.com/JWvK3kffXBV517ZB9d9rTOUJQQPrOVQFnciCZDdApK8JVcCMBksPk91VnJWS6hyf2zdqseMVHEWEJVpZSsSItiFjPt9tRxJQDlUbZimc2erXklybt_T1GjCpARBpYKHg.png) 
+        - FFT počíta DFT v čase $\Theta(n\ log\ n)$ 
+        - najprv polynóm doplníme nulami tak aby jeho veľkosť $n$ bola mocninou 2, potom zvolíme $n$-tú primitívnu odmocninu 1 $\omega$ a budeme polynóm vyhodnocovať v bodoch $\omega^0,\omega^1,...,\omega^{n-1}$ - navzájom rôzne komplexné čísla, hodnoty $\omega^{n/2},...,\omega^{n-1}$ sa od $\omega^0,...,\omega^{n/2-1}$ líšia iba znamienkom a $\omega^2$ je primitívna $(n/2)$-tá odmocnina 1
+    - Euklidův algoritmus
+        - $\forall x,y\in\Z^+:gcd(x,x)=x,\ gcd(x,y)=gcd(y,x),\ gcd(x,y)=gcd(x-y,y)$ pre $x>y$
+        - najväčší spoločný deliteľ celých kladných čísel $x$ a $y$ je $gcd(x,y)$
+        - ![](https://remnote-user-data.s3.amazonaws.com/rCFo_9w2-2fwgx0evI0WqczJqwDZboNPhZ1JqBf-UUbv1ipkS5oGQYDWQpd71tAsEQgzuHoF1sNRD_yzM7_WLcjXvLxy8efm1Lrt-drBfeXvAG5mDOZ39Yzw15pB6FMV.png) 
+        - algoritmus zastaví a vydá správny výsledok
+        - EA vypočíta $gcd(x,y)$ a vykoná pritom najviac $c.(log_2x+log_2y+1)$ operácii 
+    - diskrétní Fourierova transformace (DFT)
+        - DFT je lineárne zobrazenie a môžme ho zapísať ako násobenie maticou $\Omega$, kde $\Omega_{jk}=\omega^{jk}$ a keďže $\omega^{-1}=\overline{\omega}$ tak $\Omega.\overline{\Omega}=n.E$ čiže $\Omega^{-1}={1\over n}\overline{\Omega}$
+            - ![](https://remnote-user-data.s3.amazonaws.com/Fj2oZ3aDH31j3y7J4I_RkU0SliX3kUfCf4QbjQqx5vZ8So2sW2nSGGSbIguBQin15o7At_mibVRyhUELLFWN0QuoE_ORHR_2eXXILcIFwS7OPua55LMvXhQoyHzMjzBE.png) 
+        - aplikace
+            - odpovedá spektrálnemú rozkladu signálov na $sin$y a $cos$iny - algoritmy na filtrovanie zvuku, kompresia zvuku a obrazu (MP3, jpeg), rozpoznávanie reči 
+            - násobenie polynómov
+        - zobrazenie $\mathcal{F}:\mathbb{C}^n\rightarrow\mathbb{C}^n$, ktoré vektoru $x$ priradí vektor $y$ daný prepisom $y_j=\sum_{k=0}^{n-1}x_k.\omega^{jk}$, kde $\omega$ je nejaká pevne zvolená primitívna $n$-tá odmocnina 1. Vektor $y$ sa nazýva  __Fourierov obraz__  vektoru $x$.
+- **Aproximační algoritmy**
+    - aproximační schémata→Aproximační algoritmus, který má jako vstup instanci dané úlohy a číslo $\varepsilon > 0\,\!$, a který pro libovolné $\varepsilon\,\!$ pracuje jako aproximační algoritmus s relativní chybou $\varepsilon\,\!$. Doba běhu může být exponenciální jak vzhledem k $n\,\!$ - velikosti vstupní instance, tak vzhledem k $\frac{1}{\varepsilon}\,\!$. 
+    - relativní chyba→algoritmus rieši problém s relatívnou chybou $\varepsilon(n)\,\!$, ak pre každé zadanie veľkosti $n\,\!$ platí: $\frac{|C-C^{*}|}{C^{*}}\leq \varepsilon(n)\,\!$ 
+    - Aproximační algoritmus běží v polynomiálním čase a vrací řešení "blízká" optimu. Je nutné mít nějakou míru kvality řešení. Označme:
+        - $C\,\!$ hodnotu nalezenou aproximačním algoritmem
+        - $C^{*}\,\!$ hodnotu optimálního řešení
+    - příklad: batoh (algoritmus)
+        - ![](https://remnote-user-data.s3.amazonaws.com/m3qvNBmenUbhi0-eijQJ1KX89kYlP0TWCjawG96JUmozX7OJpC1SiX8BkpXwBIlOk7zrQBfg8_PuvY9E7eSBdaz92KgxAYnk0N8HUXwZkIZ8AS9r5IPc7jVeULB3WmdG.png) 
+    - příklad: obchodní cestující
+        - nájdená kružnica nie je dlhšia než dvojnásobok optima - $A\le2T$ a $T\le O$ teda $A\le2T\le2O$ 
+        - nájdeme najmenšiu kostru, zakoreníme ju a budeme ju prechádzať do hĺbky
+        - ak je graf úplný a platí v ňom trojuholníková nerovnosť vieme POC 2-aproximovať
+        - zaznamenáme ako sme prechádzali hranami, ak sa dostaneme do už navštíveného vrcholu, preskočíme ho a presunieme sa do najbližšieho nenavštiveného
+    - poměrová chyba→algoritmus rieši problém s pomerovou chybou $\rho(n)\,\!$, ak pre každé zadanie veľikosti $n\,\!$ platí: $\max\{\frac{C^{*}}{C},\frac{C}{C^{*}}\}\leq \rho(n)\,\!$ 
+- **Binarní vyhledávací stromy**
+    - definice vyhledávacího stromu
+        - binárny vyhľadávací strom 
+            - binárny strom, kde každému vrcholu priradíme unikátny kľúč $k(v)$ z univerza a pre $\forall v$ musí platiť: 
+                - $b\in R(v)$ potom $k(b)>k(v)$ 
+                - $a\in L(v)$ potom $k(a)<k(v)$ 
+        - všeobecný vyhľadávací strom 
+            - vnútorné vrcholy obsahuju ľubovolný nenulový počet kľúčov, ak má vrchol $k$ kľúčov potom má $k+1$ synov a kľúče sú oddeľovače hodnôt v podstromoch 
+            - vrcholy delíme na vnútorné a vonkajšie
+            - zakorenený strom s určeným poradím synov každého vrcholu
+            - vonkajšie (externé) vrchly neobsahujú žiadne dáta a nemajú potomkov (listy stromu)
+        - binárny strom
+            - zakorenený strom, kde každý vrchol má najviac dvoch synov u ktorých rozlišujeme ktorý je ľavý a ktorý pravý
+            - pre vrchol $v$ binárneho stromu $T$:
+                - $l(v),r(v)$- ľavý a pravý syn vrcholu $v$
+                - $T(v)$- podstrom obsahujúci vrchol $v$ a $\forall$ jeho synov
+                - $L(v),R(v)$- ľavý a pravý podstrom vrcholu $v$, teda $T(l(v)),T(r(v))$  
+                - $h(v)$- hĺbka stromu $T(v)$ (maximum z dĺžok ciest z $v$ do listov, pre $T(\empty)$ definujeme $h(\empty)=-1$)
+    - operace s nevyvažovanými stromy
+        - $Delete(x)$ - odstránenie vrcholu, ak je vrchol list rovno ho odstránime, ak má vrchol práve jedného syna "vystrihneme ho" a nahradíme synom, ak má vrchol dvoch synov nájdeme jeho následníka $s$ tj. najľavejší vrchol v pravom podstrome
+        - $Insert(x)$ - vkladanie vrchola s daným kľúčom, pokúsime sa nájsť $x$ pomocou $Find(x)$, ak sa nám to podarilo hotovo, inak vložíme nový symbol na poslednú pozíciu 
+        - $Find(x)$ - hľadanie vrcholu s daným kľúčom, prechádza strom od koreňa, každý vrchol $v$ porová s $x$, $x<k(v)$ zamieri na ľavý podstrom, $x>k(v)$ pravý 
+        - dokonale vyvážené stromy
+            - $\forall v:||L(v)|-|R(v)||\le1$ tj. počet vrcholov ľavého a pravého podstromu sa líši najviac o 1.
+            - pre dokonale vyvážené BVS stromy má operácia $Insert/Delete$ zložitosť $\Omega(n)$ 
+    - červeno-černé stromy a jejich vyvažování
+        - hĺbka RB stromu s $n$ kľúčmi je $\Theta(log\ n)$ 
+        - RB-stromy sú (2,4)-stromy preložené na binárne stromy
+![](https://remnote-user-data.s3.amazonaws.com/_jbI0dovTdgBumcqLazDeeI8BNt7iwVuTS1aHjB-kol_WjW8o70yEu94t2IoIfxQcFd0SWWwJY_V5Tp8ypuS9UY13FkD4foTaOdsege-7FPxeJWW-LrXTCHRdDAb42UN.png) 
+        - Vyvažovanie
+            - $Insert$ s preventívnym štiepením - miesto pre nový vrchol hľadáme ako pri binárnych stromoch, ak po ceste stretneme 4-vrchol rozštiepime ho prefarbením, nový vrchol prepojíme červenou hranou, budeme sa vracať späť do koreňa a opravovať podmienky rotácií ![](https://remnote-user-data.s3.amazonaws.com/cgBDCxNOS9DZkbCCGy9tjF7GYmaf3_orx1PVLxPJeUpzkSWqWt59x-Ma1zdLF_L6NuYCx-84tt6pYPm9U0pRhZspgStyoqAjUO8XHczwdnBpYI3Ds9L9AWZ2Mul1nkGJ.png) 
+            - prefarbenie 4-vrcholu: odpovedá rozštiepeniu 4-vrcholu na dva 2-vrcholy, pričom kľúč presúvame do nadradeného vrcholu, čierne axiómy sú zachované, môže dôjsť k porušeniu červených axiómov ![](https://remnote-user-data.s3.amazonaws.com/ntuRTYXqgI9143zhI1woCNHfIcn7BldxEdVnBsXNtB_x1oCFXIq_WZ2VIyWkqC7rQCBaHzzzrnZkRb3s4v6AeCz4gtmbl1epDjCCt4nAxEKa5FvtVzNKgSqOibZbWo2A.png) 
+            - rotácie: iba červených hrán, zachováva správne usporiadanie kľúčov a čierne axiomy, červené axiómy záležia na farbách okolných hrán![](https://remnote-user-data.s3.amazonaws.com/2dj50W0uMUYIv0R89Jvtm1WjMcN21VoVAN1EnAmQSxWhjLGGMOYB28_eyvHFQWbw7DQf26GMlTvhR1IskgJBsXYU97cZhJy6QwB1aQ6TqQahstJx0l80-QPaiAUGrjd1.png) 
+        - LLRB - left leaning red-black tree - BVS s externými vrcholmi a ofarbením hrán červeno a čierno, kde platí 
+            - každá cesta z koreňa do externého vrcholu má rovnaký počet čiernych hrán
+            - ^^ak z vrcholu vedie práve 1 červená hrana, potom vedie doľava^^
+            - hrany do externých vrcholov (listov) sú čierne
+            - ^^neexistujú 2 červené hrany bezprstredne nad sebou^^
+    - AVL stromy a jejich vyvažování
+        - Vyvažovanie
+            - ak má $\delta(v)$ inú hodnotu je potrebné vykonať  _rotáciu_  - operáciu, ktorá otočí hranu medzi vrcholmi a prepojí ich podstromy tak aby boli synovia vzhľadok k rodičom správne usporiadaní
+            - v každom vrchole $v$ udržiavame číslo $\delta(v)=h(r(v))-h(l(v))$, tzn. znamienko vrchola
+                - $\delta(v)=-1$ ľavý podstrom je hlbší (značíme -)
+                - $\delta(v)=0$  podstromy rovnako hlboké (značíme 0)
+                - $\delta(v)=1$ pravý podstrom je hlbší (značíme +)
+            - $Insert$ - vožíme list, zmeny v hĺbke podstromu sa propagujú smerom ku koreňu, v prípade potreby vyvažujeme (BÚNO prehĺbime ľavý podstrom vrcholu $x$)
+                - $x$ mal znamienko $+\ \rightarrow\ 0$, nepropagujeme 
+                - $x$ mal znamienko $-$ a ľavý syn $y$  $+$, dvojitá rotácia rotácia - nepropagujeme
+                - $x$ mal znamienko $-$ a ľavý syn $y$ tiež $-$, jednoduchá rotácia - nepropagujeme
+                - $x$ mal znamienko $0\ \rightarrow\ -$, hĺbka narástla - propagujeme
+            - $Delete$ - vrchol zmažeme podľa mazania v BVS, cestou do koreňa propagujeme zmenu znamienok (BÚNO zmena v ľavom podstrome vrcholu $x$)
+                - $x$ mal znamienko $+$ a ľavý syn $y$  $-$, dvojitá rotácia rotácia - nepropagujeme
+                - $x$ mal znamienko $-\ \rightarrow\ 0$, propagujeme
+                - $x$ mal znamienko $0\ \rightarrow\ +$, nepropagujeme
+                - $x$ mal znamienko $+$ a ľavý syn $y$ $0$, jednoduchá rotácia - nepropagujeme
+                - $x$ mal znamienko $+$ a ľavý syn $y$ tiež $+$, jednoduchá rotácia - nepropagujeme
+            - ![](https://remnote-user-data.s3.amazonaws.com/NVhB3bTHjGe_x9Swqj4Y9habV6JldnwODVQwwL3_XoVQivGF2rvF_jD1fQq2PP7sWe-_1A6ISjMaNzDfutDGKMaJyEyjD-PNKEOGsXL-ThnsNKP9nLAOhlcsTsYBG0ve.png)
+        - AVL strom na n vrcholoch má hĺbku $\Theta(log\ n)$ 
+        - hĺbkovo vyvážené stromy - $\forall v:|h(l(v))-h(r(v))|\le1$ tj. hĺbka ľavého a pravého podstromu sa líši najviac o 1.
+- **Metoda “rozděl a panuj”**
+    - výpočet složitosti pomocí rekurentních rovnic
+    - podproblémy sa rovnako rekurzívne delili na menšie podproblémy až po triviálny problém
+    - princíp delenia problému na podproblémy a z ich výsledkov zloženie riešenia celého problému
+    - aplikace: 
+        - Mergesort
+            - $(x_1,x_2,...,x_{\lfloor n/2\rfloor})\leftarrow mergesort(a_1,a_2,...,a_{\lfloor n/2\rfloor})$    
+            - ak $n=1$ vráť ako výsledok $b_1=a_1$    
+            -  __Výstup__ : roztriedená postupnosť $(b_1,...,b_n)$ 
+            - zložitosť triedenia: 
+                - $T(1)=1$
+                - dosadením
+                    - $T(n)=2(2T({n\over 4})+{cn\over2})+cn=4T({n\over4})+2cn$
+                    - $T(n)=4(2T({n\over8})+{cn\over4})+2cn=8T({n\over8})+3cn$
+                    - všeobecne: $T(n)=2^k.T({n\over2^k}+k.cn)$ 
+                    - a pre $k=log_2n,\ {n\over2^k}=1$: $T(n)=2^{log_2n}T(1)+cn\ log_2n=n+cn\ log_2n\Rightarrow\Theta(n\ log\ n)$ 
+                - $T(n)=2T({n\over2})+cn$  
+            - $(y_1,y_2,...,y_{\lceil n/2\rceil})\leftarrow mergesort(a_{\lfloor n/2\rfloor+1},...,a_n)$ 
+            - $(b_1,b_2,...,b_n)\leftarrow merge(x_1,...,x_{\lfloor n/2\rfloor},y_1,...,y_{\lceil n/2\rceil})$ 
+            -  __Vstup__ : postupnosť $(a_1,a_2,...,a_n)$   __Výstup__ : zotirdené postupnosť $(b_1,b_2,...,b_n)$ 
+        - násobenie matíc - Strassenův algoritmus
+            - majme matice $X,Y$ tvaru $n\times n$ pre $n=2^k$, rozdelíme ich na bloky ${n\over2}\times{n\over2}$
+            - $X.Y={A\ B\choose C\ D}.{P\ Q\choose R\ S}={AP+BR\ AQ+BS\choose CP+DR\ CQ+DS}$, dostaneme $\delta$ násobení matíc polovičnej veľkosti s réžiou $\Theta(n^2)\Rightarrow$ kuchárkova veta $\Theta(n^3)$
+            - klasický súčin dvoch matíc trvá $\Theta(n^3)$ 
+            - algoritmus: $XY={T_1+T_4-T_5+T_7\ \ T_3+T_5\choose T_2+T_4\ \ T_1-T_2+T_3+T_6}$, kde
+                - $T_1=(A+D)(P+S)$, $T_2=(C+D)P$, $T_3=A(Q-S)$, $T_4=D(R-P)$, $T_5=(A+B)S$, $T_6=(C-A)(P+Q)$, $T_7=(B-D)(R+S)$
+                - 7 násobení matíc, 18 maticových súčtov a rozdielov v čase $\Theta(n^2)$
+                - zložitosť algoritmu $T(n)=7.T({n\over2})+\Theta(n^2)$ 
+                - kuchárková veta $T(n)=\Theta(n^{log_27})\approx\Theta(n^{2,807})$ 
+        - násobení dlouhých čísel - Karacubov algoritmus
+            - potom $XY=AC.10^n+(AD+BC).10^{n\over2}+BD$, spočítame AC, AD, BC, BD rekurzívne a zložíme výsledok
+                - $T(n)=4.T({n\over2})+\Theta(n)$
+                - $T(1)=1$ 
+            - vylepšíme pomocou $(A+B)(C+D)=AC+AD+BC+BD$, potom $XY=AC.10^n+((A+B)(C+D)-AC-BD).10^{n\over2}+BD$
+                - a teda $T(n)=3.T({n\over2})+\Theta(n)$ 
+            - na i-tej hladine teda strávime čas $\Theta(n({3\over2})^i)$, v súčte cez všetky hladiny 
+                - $T(n)=n\sum^{log_2n}_{i=0}({3\over2})^i$ geometrická rada s kvocientom ${3\over2}\Rightarrow$ súčet $({3\over2})^{1+log_2n}-1\over{3\over2}-1$ z čoho dostaneme $({3\over2})^{log_2n}$ a upravíme na 
+$(2^{log_2{3\over2}})^{log_2n}=2^{log_2({3\over2})log_2n}=(2^{log_2n})^{log_2{({3\over2})}}=n^{log_2({3\over2})}=n^{log_23-1}\approx\Theta(n^{1,58})$ 
+            - na i-tej hkadine máme $3^i$ vrcholov s problémami veľkosti $({n\over2^i})$, hĺbka je $log_2n$
+            - rozbor stromu rekurzie:
+            - ![](https://remnote-user-data.s3.amazonaws.com/szBGu5JaDKVqN06gGqsD0F6K4mqtVoio1ur0SQsFOXJ_wx2LoytvNjRrIeV08CQQctiUxto8mwmCAOtU_s8IANjH_Cy9HvWuN2IesRxXd-mrZlTDGo3x8tQAoFe1ZrYA.png) 
+            - n-ciferné čísla$X$ a $Y$ rozdlíme na horných a dolných $n\over2$ cifier
+                - $X=A.10^{n\over2}+B$, $Y=C.10^{n\over2}+D$ pre nejaké $({n\over2})$-ciferné čísla $A,B,C,D$. 
+    - kuchařková věta (Master theorem)
+        - Rekurencia: 
+            - má riešenie zložitosti
+                - Mergesort, binárne vyhľadávanie: $T(n)=\Theta(n^clog\ n)$ ak ${a\over b^c}=1$ 
+                - hľadanie mediánu: $T(n)=\Theta(n^c)$ ak ${a\over b^c}<1$
+                - Karacuba, Strassen: $T(n)=\Theta(n^{log_ba})$ ak ${a\over b^c}>1$ 
+            - $T(n)=a.T({n\over b})+\Theta(n^c),\ b>1,a\in\N^+,c\ge0$ 
+            - $T(1)=1$
+        - Uvažme rekurzívny algoritmus, ktorý rozloží vstup na $a$ podproblémov veľkosti $n/b$ a z ich výsledkov zloží celkovú odpoveď v čase $\Theta(n^c)$.
+- **Hešování**
+    - analýza průměrné časové složitosti
+    - hešování s přihrádkami
+        - pre rozdelenie $n$ prvkov do $m=\Theta(n)$ priehradok je očakávaný čas operácií $O(1)$.
+        - Hešovacie funkcie (ideálne - spočítateľné v konštantnom čase) 
+            - Polynóm: $x_0,...,x_{d-1}\rightarrow(\sum_ia_ix_i)\ mod\ m$ zvolíme konštantu $a$, počítame skalárny súčin zadanej postupnosti s vektorom $(a^0,a^1,...,a^{d-1})$
+            - Lineárna kongruencia: $x\rightarrow ax\ mod\ m$, kde $m$ je prvočíslo a $NSD(a,m)=1$ 
+        - majme univerzum $\mathcal{U}$ možných hodnôt bez usporiadania a konečnú množinu priehradok tabuľky $\mathcal{P}=\{0,...,m-1\}$,  _hešovacia funkcia_  $h:\mathcal{U}\rightarrow\mathcal{P}$ každému prvku priradí jednu  _priehradku_  - predpokladáme, že $h$ sa chová náhodne a vieme $h$ určiť v konštantnom čase 
+        - Prehešovanie 
+            - ak použijeme $\Omega(n)$ priehradok vyhľadávame s priemerne konštantnou časovou zložitosťou
+            - jedno prehešovanie trvá $\Theta(n)$, medzi prehešovaniami vkladáme rádovo $n$ prvkov - každý prvok prispeje konštantným časom 
+            - ak $n$ nepoznáme, založíme tabuľku s konštantným počtom priehradok, pri vkladaní prvku skontrolujeme faktor naplnenia $\alpha\le1$, ak je tabuľka príliš plná zdvojnásobime $m$ a vštky prvky prehešujeme
+        - hľadania, vkladanie aj mazanie  pozostáva z výpočtu $h(x)$ a prejdenia hodnôt v príslušnej priehradke
+    - otevřená adresace
+        - Pri mazaní len označujeme prvky ako zmazané, ak je ich veľa tabuľku prebudujeme
+        - Pri vyhľadávaní budeme prechádzať priehradky $h(x,0), h(x,1)$ a tak ďalej. Zastavíme sa, akonáhle narazíme buď na $x$, alebo na prázdnu priehradku
+        - Vkladanie do tabuľky prebieha postupným skúšaním $j=h(x,i)$ pre $i=1,..m-1$ ak je $A[j]=\empty$ pridáme do neho $x$, inak je tabuľka plná
+        - $m$ priehradok $A[0],...,A[m-1]$, do každej sa zmestí len jeden prvok, ak je priehradka plná skúsime použiť náhradnú atď.
+        - Prehľadávacie postupnosti 
+            - Lineárne pridávanie: $h(x,i)=(f(x)+1)\ mod\ m$, kde $f(x)$ je obyčajná hešovacia funkcia teda využívame po sebe idúce priehradky, výhodou sekvenčný prístup do pamäte a nevýhodou rast súvislých blokov obsadených priehradok pri neúspešnom vkladaní 
+            - Dvojité hešovanie: $h(x,i)=(f(x)+i.g(x))\ mod\ m$, kde sú $f:\mathcal{U}\rightarrow\{0,...,m-1\}$, $g:\mathcal{U}\rightarrow\{1,...,m-1\}$ hešovacie funkcie, $m$ prvočíslo $\Rightarrow\ g(x)$ nesúdeliteľné s $m$ a postupnosť navštívi každú priehradku práve raz 
+        - hešovacia funkcia každému prvku $x\in\mathcal{U}$ priradí vyhľadávaciu postupnosť $h(x,0),h(x,1),...,h(x,m-1)$, ktorá určuje poradie priehradok kam sa pokúsime $x$ vložiť, predpokladáme že postupnosť obsahuje všetky priehradky v dokonale náhodnom poradí
+- **Haldy**
+    - $Insert$ 
+        - prázdna alebo jednoprvková tvorená triviálne
+        - list pridávame na koniec poslednej hladiny, ak by bola hladina plná založíme novú hladinu s listom úplne vľavo $\Rightarrow$ strom správneho trvaru
+        - je treba opraviť prípadné porušenie usporiadania medzi listom $l$ a otcom $o$ ak $k(l)<k(o)$ list a otca prehodíme, rovnako postupujeme smerom k vyšším hladinám - "prebublanie"
+    - minimová binární halda
+        - halda s $n$ prvkami má $\lfloor log_2n\rfloor+1$ hladín
+        - je dátová štruktúra tvaru binárneho stromu v ktorého každom vrchole je uložený jeden prvok a platí 
+            - ak je $v$ vrchol a $s$ jeho syn platí $k(v)\le k(s)$ 
+            - všetky hladiny okrem poslednej sú plne obsadené, posledná hladina je zaplnená zľava
+    - $Delete\ min$
+        - minimum je udržiavané v koreni, koreň zmazať nemôžeme, namiesto toho zmažeme vrchol najviac vpravo na najnižšej hladine a prvok, ktorý tam bol uložený presunieme do koreňa
+        - nový koreň môže byť väčší ako niektorý zo synov alebo oba $\Rightarrow$ prehodíme ho s tým menším, podobne "zabubleme" do nižších hladín 
+- **Časová složitost algoritmů **
+    - prostorová složitost algoritmu
+        - pamäťové nároky, tj. koľko najviac elementárnych pamäťových buniek v každom kroku daného algoritmu použitých 
+            - $S(n)=max\{s(x),\ x \ je\ vstup\ a\ |x|=n\}$ 
+    - měření velikosti dat
+    - algoritmus―program na riešenie skupiny problémov pre daný výpočetný model (matematicky ide postup ako vyriešiť skupinu problémov)
+    - rozdíl mezi složitostí v nejlepším, nejhorším a průměrném případě
+        - v priemernom (očakávanom) prípade: priemer pre všetky možné vstupné dáta, niekedy stredná hodnota náhodnej veličiny T(n)
+        - v  _najhoršom_  prípade: maximálny počt operácií pre dáta
+        - v  _nalepšom_  prípade: minimálny počet operácií pre dáta
+    - definice výpočetního modelu RAM Random Access Machine 
+        - Výpočet: 
+1) vstup očakávame na zvolenom mieste v pamäti
+2) vykonávame inštrukcie programu
+3) výstup očakávame na dohodnutom mieste v pamäti
+        - Počítač skladajúci sa :
+        -  _Pamäť_ : postupnosť buniek indexovaných celými číslami
+        -  _Program_ : končná postupnosť sekvenčne vykonávaných inštrukcií
+- aritmetické: +, -, ., /, mod
+- logické: AND, OR, XOR, < <, > >
+- riadiace: halt, goto label, podmienený príkaz  __if then__  
+    - čas a prostor výpočtu pro konkrétní vstup x
+        - logaritmická cena 
+            - t(x) = súčet cien inštrunkcií, kde cena inštrunkcie je počet bitov čísel použitých v inštrukcii
+            - s(x) = maximálny súčet cien použitých buniek behom výpočtu, kde cena je súčet počtu bitov hodnoty bunky a počtu bitov adresy
+        - s(x) := maximálna - minimálna požitá pamäť + 1
+        - t(x) := počet inštrukcií 
+    - časová složitost algoritmu
+        - čas v závislosti na miere veľkosti vstupu 
+            - $T(n)=max\{t(x),\ x \ je\ vstup\ a\ |x|=n\}$ 
+    - asymptotická notace:
+        - asymptotický horný odhad→funkcia $f(n)$ je triedy $O(g(n))$ ak $\exist c\ge0\forall^*n:f(n)\le c.g(n)$ 
+        - asymptotický dolný odhad→funkcia $f(n)$ je triedy $\Omega(g(n))$ ak $\exist c\ge0\forall^*n:f(n)\ge c.g(n)$ 
+        - funkcia $f(n)$ je triedy $\Theta(g(n))$→ak $f(n)$ je triedy $O(g(n))$ a zároveň je triedy $\Omega(f(n))$ 
+- **Třídění**
+    - dolní odhad složitosti porovnávacích třídících algoritmů
+    - přihrádkové třídění čísel a řetězců (lexikograficky)
+        - reťazce roztriedime Buckesortom do priehradok $p_j$ podľa dĺžky (v j-tej priehradke reťazec dĺžky $j$) a spočítame $l$ dĺžku najdlhšieho reťazca - $O(n+l)$ 
+        - Bucketsort
+            - v pamäti uložené priehradky a konštantný priestor na každý záznam = $O(n+r)$ 
+            - zaobstaráme si pole s $r$ priehradkami $p_1,...,p_r$ 
+            - v $i$-tej priehradke sa bude nachádzať zoznam záznamov s kľúčom $i$
+            - algoritmus prejde všetky záznamy a rozmiestni ich do priehrádok podľa kľúčov
+            - potom postupne prejde priehradky $p_1$ až $p_r$ a vypíše ich obsah
+        - potom budeme vykonávať $l$ priechodov priehradkového triedenia pre $i=l,l-1,...,1$ (priechod pre dané $i$ spotrebuje r krokov - cez $l$ priechodov $\Theta(lr)$)a budeme udržiavať zoznam $Z$ - na konci priechodu pre $i$ obsahuje všetky reťazce dĺžky aspoň $i$ z $p_i$, potom všetky zo zoznamu $Z$ z predchádzajúceho priechodu, nakoniec všetky priehradky vyzbierame do nového zoznamu (práca s reťazcami $\Theta(\sum_il_i)=\Theta(s)$
+        - $\Theta(n+lr+s)$ 
+    - Quicksort
+        - Tvar stromu rekurzie a časová zložitosť záleží na voľbe pivota 
+            - maximum - $O(n^2)$ na každej hladine oddlí od vstupu úsek s 1 prvkom 
+            - náhodná voľba = $O(n\ log\ n)$ 
+            - medián/skoromedián(väčší a menší ako $1\over4$ prvkov) - $O(n\ log\ n)$ veľkosť podproblému na i-tej hladine je $({3\over 4})^in$, strom je vyvážený a má hĺbku $O(log\ n)$ (veľkosti podproblémov klesajú exponenciálne)
+        - randomizovaná volba pivota, analýza průměrné složitosti
+            - QS na každé porovnanie vykoná len $O(1)$ ďalších operácií - stačí odhadnúť počet operácii.
+            - sčítaním cez všetky $(i,j)$ dostaneme počet všetkých porovnaní $\mathbb{E}=\sum_{1\le i<j\le n}{2\over j-i+1}\le 2n.\sum_{2\le d\le n}{1\over d}=\Theta(n\ log\ n)$
+            - Počet porovnaní je potom súčet indikátorov   
+            - Stredná hodnota časovej zložitosti Quicksortu s náhodnou voľbou pivota je $O(n\ log\ n)$ 
+            - $c_{ij}=1$ nastane s pravdepodobnosťou $2\over j-i+1$, potom aj $E(c_{ij})={2\over j-i+1}$ 
+            - Uvažujme roztriedenú postupnosť $y_1,...,y_n$, zavedieme náhodné veličiny $c_{ij}$ pre $1\le i<j\le n$ tz. $c_{ij}=1$ ak behom výpočtu boli porovnané $y_i$ a $y_j$, inak $c_{ij}=0$ (indikátori)
+            - rozdiely $i-j+1$ sa nachádzajú v intervale $[2,n]$ a kždým rozdielom prispeje najviac $n$ rôznych dvojíc $(i,j)$ 
+            - $c_{ij}=1$ znamená, že $y_i$ alebo $y_j$ boli pivotom a $y_{i+1},...,y_{j-1}$ nesmeli byť pivotmi, inak by $y_i$ a $y_j$ boli v rôznych častiach postupnosti
+        - v koreni vstup, v ďalších hladinách ľavé a pravé časti až po triviálne postupnosti dĺžky 1, rozkladanie a skladanie vstupu v lineárnom čase - v každom vrchole čas priamo úmerný s veľkosťou podproblému - podproblémy na jednej hladine dokopy najviac $n$ prvkov $\rightarrow O(n)$ na jednej hladine
+        - delí vstup na ľavú, pravú a strednú časť, rekurzívne roztriedime ľavú a pravú časť, potom časti poskladáme v správnom poradí a získame roztriedenú postupnosť
+    - primitivní třídící algoritmy (Bubblesort, Insertsort apod.)
+        - priame metódy, jednoduché, na mieste
+        - BubbleSort - opakovane prechádza celé pole, porovnáva dvojice susediacich prvkov a pri nesprávnom usporiadaní prvky prehodí $\Theta(k.n)$ - po $k$ prejdení je na mieste $k$ najväčších prvkov 
+        - SelectSort - opakované vyberanie najmenšieho prvku, prvý prvok považujeme za najmenší, prehľadávame pole - ak nájdeme menší zmeníme ukazatele, vymeníme prvky a pokračujeme ďalej $\Theta(n^2)$ 
+    - paralelní třidění pomocí komparátorových sítí
+        - pre ľubovolné $n=2^k$ existuje bitonická tirediaca sieť $B_n$ hĺbky $\Theta(log\ n)$ a s $\Theta(n\ log\ n)$ komparátormi
+        - triediaca sieť rádu $n$ - $T_n$ hĺbky $\Theta(log^2n)$ zložená z $\Theta(n\ log^2n)$ komparátorov existuje pre $n=2^k$ 
+        -  _triediaca (kompáratorová) sieť_  rádu $n$ je hradlová sieť s $n$ vstupmi a $n$ výstupmi  t.ž. pre každý vstup vydá roztriedenú permutáciu - zložená z komparátorov, kt. porovnávajú dve hodnoty a vedia rozhodnúť ktorá je väčšia
+        - postupnosť $x_0,...,x_{n-1}$ je  _čisto bitonická_  ak ju môžeme na nejakej pozícii $k$ rozdeliť na rastúcu postupnosť $x_0,...,x_k$ a klesajúcu postupnosť $x_k,...,x_{n-1}$ -  _bitonick_ á ak je možné ju získať rotáciou čisto bitonickej postupnosti
+        -  _separátor rádu _ $n$ je komparátorová sieť $S_n$ so vstupmi $x_0,...,x_{n-1}$ a výstupmi $y_0,...,y_{n-1}$ - ak na vstupe dostane bitonickú postupnosť rozdelí ju na dve polovice a naviac sú všetky prvky v prvej polovici menšie ako všetky v druhej
+        -  _Bitonická triediaca sieť rádu _ $n$ je kompáratorová sieť $B_n$ s  vstupmi a $n$ výstupmi - ak dostane na vstupe bitonickú postupnosť vydá ju roztriedenú
+        -  _slévačka rádu _ $n$ je kompáratorová sieť $M_n$ s $2\times n$ vstupmi a $2n$ výstupmi - ak dostaneme 2 roztriedené postupnosti dĺlžky $n$ vydá roztriedenú postupnosť vzniknutú ich zliatím
+    - třídění haldou (Heapsort)
+        - po $k$-tom kroku bude na indexoch $1,...,n-k$ halda a na $n-k+1,...,n$ posledných k prvkov roztriedenej postupnosti $\Rightarrow$ maximum haldy sa presunie na pozíciu $n-k$ a hranicu medzi haldou a roztriedenou postupnosťou sa posunie o 1 
+        - $Heapsort$ roztriedi $n$ prvkov v čase $O(n\ log\ n)$- celkom $O(n)$ volaní procedúry $HSBubbleDown$, v každom okamihu v halde najviac $n$ prvkov a jedno bublanie trvá $O(log\ n)$  
+        - vstup v poli, vytvoríme maximovú haldu, opakovane budeme mazať maximum, halda sa bude zmenšovať a uvoľnené miesto v poli budeme zapĺňať roztriedenými prvkami
+        - $n$ prvkovú haldu dokážeme vytvoriť v $O(n)$, prvky rozmiestnime do vrcholov binárneho stromu v ľubovolnom poradí, budeme opravovať usporiadanie od najnižšej hladiny, tj. v poradí klesajúcich indexov, pri spracovaní vrchola využijeme to, že celý podstrom je usporiadaný korektne 
