@@ -1,4 +1,4 @@
-import { getClient, getPotatoes } from './../src/database.js'
+import { getClient, getLastUpdate, getPotatoes } from './../src/database.js'
 import { Router } from 'express'
 import { promises as fs } from 'fs'
 import dotenv from 'dotenv'
@@ -10,12 +10,12 @@ const dbclient = getClient()
 
 router.get('/potatoes', async function (req, res) {
   const potatoes = await getPotatoes(dbclient)
-  console.log(JSON.stringify(potatoes))
-  //const sum = getPotatoesSum(potatoes)
+  const lastUpdate = formatDate(await getLastUpdate(dbclient))
+  const sum = getPotatoesSum(potatoes)
   res.render('index', {
     objednavky: potatoes,
-    sum:1,
-    lastUpdate:2
+    sum,
+    lastUpdate
   })
 })
 
@@ -30,22 +30,18 @@ function getPotatoesSum (potatoes) {
   return result
 }
 
-async function getPotatoesFromFile () {
-  const jsonString = await fs.readFile('data.txt', 'utf8')
-  const data = JSON.parse(jsonString)
-  const result = []
+function formatDate (str) {
+  const date = new Date(str);
 
-  if ('Datum' in data) {
-    for (let i = 0; i < data.Datum.length; i++) {
-      result.push({
-        Datum: data.Datum[i],
-        Mnozstvi: data.Mnozstvi[i],
-        Nazev: data.Nazev[i],
-        Objednavka: data.Objednavka[i]
-      })
-    }
-  }
-  return [data.LastUpdate, result]
+  return date.toLocaleString('cs-CZ', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).replace(',', '');
 }
 
 router.post('/potatoes/update', async (req, res) => {

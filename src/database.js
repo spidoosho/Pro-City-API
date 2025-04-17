@@ -24,4 +24,22 @@ async function getPotatoes (dbClient) {
   }
 }
 
-export { getClient, getPotatoes }
+async function getLastUpdate (dbClient) {
+  // Add your implementation here
+  // Example implementation:
+  try {
+    const {
+      data,
+      error
+    } = await dbClient
+      .from('LastUpdate')
+      .select('Date')
+      .limit(1)
+    return data[0].Date
+  } catch (e) {
+    console.error(e)
+    return false
+  }
+}
+
+export { getClient, getPotatoes, getLastUpdate }
