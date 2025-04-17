@@ -1,18 +1,22 @@
-const { BatchWriteItemCommand, DescribeTableCommand } = require('@aws-sdk/client-dynamodb')
-const { getClient } = require('./../src/database.js')
-const { getPotatoesFromDb } = require('./../src/potatoesdb.js')
-const fs = require('fs')
-const express = require('express')
-require('dotenv').config()
+import { getClient, getPotatoes } from './../src/database.js'
+import { Router } from 'express'
+import { promises as fs } from 'fs'
+import dotenv from 'dotenv'
 
-const router = express.Router()
+dotenv.config()
+
+const router = Router()
 const dbclient = getClient()
 
 router.get('/potatoes', async function (req, res) {
-  const [lastUpdate, potatoes] = await getPotatoesFromFile(dbclient)
+  const potatoes = await getPotatoes(dbclient)
   console.log(JSON.stringify(potatoes))
-  const sum = getPotatoesSum(potatoes)
-  res.render('index', { objednavky: potatoes, sum, lastUpdate })
+  //const sum = getPotatoesSum(potatoes)
+  res.render('index', {
+    objednavky: potatoes,
+    sum:1,
+    lastUpdate:2
+  })
 })
 
 function getPotatoesSum (potatoes) {
@@ -23,12 +27,11 @@ function getPotatoesSum (potatoes) {
       result += parseInt(numericPart)
     }
   }
-
   return result
 }
 
 async function getPotatoesFromFile () {
-  const jsonString = fs.readFileSync('data.txt')
+  const jsonString = await fs.readFile('data.txt', 'utf8')
   const data = JSON.parse(jsonString)
   const result = []
 
@@ -42,19 +45,17 @@ async function getPotatoesFromFile () {
       })
     }
   }
-
   return [data.LastUpdate, result]
 }
 
 router.post('/potatoes/update', async (req, res) => {
-  // await ClearTable()
-  fs.writeFile('data.txt', JSON.stringify(req.body), function (err) {
-    if (err) {
-      console.log(err)
-    }
-  })
-
-  res.send('POST request to update potatoes done.')
+  try {
+    await fs.writeFile('data.txt', JSON.stringify(req.body))
+    res.send('POST request to update potatoes done.')
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Error updating potatoes')
+  }
 })
 
-module.exports = router
+export default router

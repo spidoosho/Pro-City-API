@@ -1,10 +1,8 @@
 // Import packages
-const express = require('express')
-const bodyParser = require('body-parser')
-const leaderboard = require('./routes/leaderboard.js')
-const player = require('./routes/players.js')
-const home = require('./routes/home.js')
-const potatoes = require('./routes/potatoes.js')
+import express from 'express'
+import bodyParser from 'body-parser'
+import potatoes from './routes/potatoes.js'
+import home from './routes/home.js'
 
 // Middlewares
 const app = express()
@@ -15,10 +13,7 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-// Routes
-app.use('/', leaderboard)
 app.use('/', potatoes)
-app.use('/', player)
 app.use('/', home)
 
 // Connection

@@ -1,6 +1,7 @@
 {
   "name": "express-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "node express testing",
   "main": "index.js",
   "engines": {
@@ -14,10 +15,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.513.0",
-    "aws-sdk": "^2.1390.0",
+    "@supabase/supabase-js": "^2.49.4",
     "body-parser": "^1.20.2",
-    "cyclic-s3": "^0.8.2",
     "dotenv": "^16.4.4",
     "express": "^4.17.3",
     "pug": "^3.0.2"
