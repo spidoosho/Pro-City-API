@@ -8,7 +8,7 @@ dotenv.config()
 const router = Router()
 const dbclient = getClient()
 
-router.get('/potatoes', async function (req, res) {
+router.get('/', async function (req, res) {
   const potatoes = await getPotatoes(dbclient)
   const lastUpdate = formatDate(await getLastUpdate(dbclient))
   const sum = getPotatoesSum(potatoes)

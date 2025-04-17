@@ -9,7 +9,7 @@ const dbclient = getClient()
 /**
  * Sends a JSON response with a string of a player retrieved based on username
  */
-router.get('/', async function (req, res) {
+router.get('/healthcheck', async function (req, res) {
   const hasFound = await getPotatoes(dbclient)
 
   if (hasFound) {
